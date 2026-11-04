@@ -1,0 +1,4 @@
+Designator,Value,Footprint,Side,X (mm),Y (mm),Rotation,LCSC
+J4,Display 3.5 MSP3520,PinSocket_1x14_P2.54mm_Vertical,Top,119.4900,-136.0000,90,C2897377
+U1,ESP32-S DevKit 38,ESP32_DevKit_38_3rows,Bottom,136.7000,-54.2700,180,C2897382 + C2897380
+U2,TP4056 USB-C module,Module_TP4056_USB-C_flipped,Bottom,149.5000,-49.5450,180,

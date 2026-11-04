@@ -1,0 +1,27 @@
+Comment,Designator,Footprint,LCSC Part #
+Passive magnetic transducer 12mm P=6.5mm,BZ1,Buzzer D12mm P=6.5mm,C2687681
+10uF 25V X5R/X7R leaded ceramic P=5mm,"C2,C5,C6,C13",Radial P=5mm,
+4.7uF 16V leaded ceramic P=5mm,C4,Radial P=5mm,
+100uF 16V electrolytic D5x11 P=2mm,C7,Radial D5 P=2mm,C108735
+100nF 50V X7R leaded ceramic P=5mm,"C8,C11,C14,C15",Radial P=5mm,C342794
+Schottky BAT85 (BAT43 equivalent) DO-35,"D1,D2,D3",DO-35,C3312828
+red LED 3mm,D5,LED 3mm,C2895470
+1N4148 DO-35,D6,DO-35,C84410
+Battery 18650,J2,JST PH 2P right-angle,C173752
+Power button (Dupont),J3,Header 1x04 right-angle 2.54,C492412
+DHT22 (Dupont),J7,Header 1x03 right-angle 2.54,C492411
+Lamp (Dupont),J8,Header 1x02 right-angle 2.54,C492410
+Joystick (JST-XH 5),J9,JST XH 5P straight,C157991
+IPP80P03P4L-04,Q1,TO-220-3,
+BC327-40,Q2,TO-92,C713608
+2N7000,Q3,TO-92,C9114
+BC337-40,"Q4,Q8,Q9",TO-92,C713611
+100kOhm 1% 1/4W metal film,"R10,R11,R12,R13",AXIAL-0207 (D2.5xL6.3),C119369
+10kOhm 1% 1/4W metal film,"R17,R18,R21,R34",AXIAL-0207 (D2.5xL6.3),C2903232
+150Ohm 1% 1/4W metal film,R19,AXIAL-0207 (D2.5xL6.3),C2903242
+1kOhm 1% 1/4W metal film,"R24,R32,R33,R35,R36,R37",AXIAL-0207 (D2.5xL6.3),C713997
+10kOhm 1% 1/4W metal film,R30,AXIAL-0207 (D2.5xL6.3),C2903232
+3.9Ohm 1% 1/4W metal film,R31,AXIAL-0207 (D2.5xL6.3),C3365530
+1kOhm 1% 1/4W metal film,R4,AXIAL-0207 (D2.5xL6.3),C713997
+100kOhm 1% 1/4W metal film,"R7,R8,R23",AXIAL-0207 (D2.5xL6.3),C119369
+MCP1826S-3302E/AB,U5,TO-220-3,C185586

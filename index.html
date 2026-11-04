@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OnStepX TFT remote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="docs.css">
+<style>
+  .wrap{grid-template-columns:minmax(0,1fr)} .wrap>*{min-width:0}
+  .lead{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:6px}
+  .lead .card b{display:block;font:600 22px/1.1 "Barlow Semi Condensed",sans-serif;color:var(--fg)}
+  .lead .card span{color:var(--mu);font-size:13px}
+  .studio{grid-template-columns:minmax(0,1fr) 340px}
+  .scene{height:680px}
+  .bench{border-left:1px solid #1B2230;background:#0B0F17;padding:14px 14px 16px;display:grid;align-content:start;gap:12px;max-height:680px;overflow:auto}
+  .bench h3{color:#fff;font-size:15px;margin:0}
+  .bench .k{font:600 10.5px/1 "Barlow Semi Condensed",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#7F8BA0;margin:4px 0 2px}
+  .chips{display:flex;flex-wrap:wrap;gap:5px}
+  .chips button{font:600 12px/1 "Barlow Semi Condensed",sans-serif;letter-spacing:.03em;color:#B9C4D4;background:#111827;border:1px solid #2A3446;border-radius:999px;padding:7px 10px;cursor:pointer}
+  .chips button[aria-pressed="true"]{color:#FFD2CC;border-color:#E5483B;background:rgba(229,72,59,.16)}
+  .chips button:focus-visible{outline:2px solid #6CB6FF;outline-offset:2px}
+  .chips button.go{color:#CFE6FF;border-color:#2F6FB0}
+  .state{font:11.5px/1.45 "IBM Plex Mono",monospace;color:#9FB0C6;background:#0E1420;border:1px solid #1E2838;border-radius:8px;padding:8px 9px}
+  .logs{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
+  .logs ol,.logs ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:3px;max-height:300px;overflow:auto}
+  .logs li{font:12.5px/1.4 "IBM Plex Mono",monospace;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .logs li code{color:var(--fg)}
+  .logs li:first-child,.logs li:first-child code{color:var(--ac)}
+  .guide{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+  .guide .card h3 small{font:500 12px/1 "IBM Plex Mono",monospace;color:var(--mu);margin-left:6px}
+  .try{margin-top:8px;font:600 12.5px/1 "Barlow Semi Condensed",sans-serif;letter-spacing:.04em;color:var(--ac);background:var(--acbg);border:1px solid var(--ac);border-radius:999px;padding:7px 11px;cursor:pointer}
+  .steps{counter-reset:s;list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  .steps li{counter-increment:s;display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .steps li::before{content:counter(s);display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--acbg);color:var(--ac);font:600 12px/1 "IBM Plex Mono",monospace}
+  .steps li label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+  .steps li input{margin-top:4px;accent-color:var(--ok);width:16px;height:16px;flex:none}
+  .steps li.done{opacity:.6}
+  .steps li .t{color:var(--mu);font-size:14px}
+  .steps li .t b{color:var(--fg)}
+  .wiring svg text{font:600 12px "IBM Plex Mono",monospace;fill:currentColor}
+  .wiring svg .sub{font:500 11px Barlow,sans-serif;opacity:.75}
+  .wiring svg g.w{transition:opacity .15s}
+  .wiring.hovering svg g.w{opacity:.18}
+  .wiring.hovering svg g.w.hot{opacity:1}
+  .wiring tr[data-c]{cursor:default}
+  .wiring tr.hot td{background:var(--acbg)}
+  a{color:var(--ac)}
+  .pill-ok{color:var(--ok)} .pill-wa{color:var(--wa)}
+  @media (max-width:980px){.studio{grid-template-columns:1fr}.bench{border-left:0;border-top:1px solid #1B2230;max-height:none}.scene{height:560px}}
+</style>
+</head>
+<body data-autostart="1">
+<div class="wrap">
+  <header>
+    <div>
+      <h1>OnStepX TFT hand controller — the real thing, in 3D</h1>
+      <p>The SHC_OnStepX hand controller as it will be built: the printed enclosure (the STLs exported from <code>enclosure_hc_tft.scad</code>), the 3.5″ MSP3520 display, the HC-TFT board, the KY-023 joystick, the ⏻ button, the GPS and the 18650. <b>The screen runs the real firmware</b>, compiled to WebAssembly, talking LX200 to a simulated <b>OnStepX main (10.29c)</b>: touch the glass, push the joystick, press ⏻. Then the guide, the wiring and everything needed to order and build it.</p>
+    </div>
+    <nav aria-label="Sections">
+      <a href="#remote">3D &amp; test bench</a><a href="#guide">User guide</a><a href="#wiring">Wiring</a><a href="#pictures">Pictures</a><a href="#order">Order &amp; build</a><a href="#files">Files</a><a href="#checks">What was checked</a>
+    </nav>
+  </header>
+
+  <div class="lead">
+    <div class="card"><b>OnStepX main</b><span>LX200 over Wi-Fi, TCP 9999, access point "OnStep"</span></div>
+    <div class="card"><b>3.5″ MSP3520</b><span>ILI9488 + XPT2046 resistive touch, 320 × 480</span></div>
+    <div class="card"><b>HC-TFT rev. C</b><span>no emergency-stop input, SDO not connected</span></div>
+    <div class="card"><b>80 × 195 × 38.9 mm</b><span>PETG / ASA enclosure, 18650 inside</span></div>
+  </div>
+
+  <h2 id="remote">The hand controller in 3D, with its firmware running</h2>
+  <div class="studio">
+    <div class="scene" id="scene">
+      <p class="help">Glass: tap, drag, wheel to scroll · Joystick head: drag (short click = its button) · ⏻: click · Elsewhere: rotate, wheel zoom, right-drag pan</p>
+      <div class="nogl" id="noWebgl">The 3D view needs WebGL and access to cdn.jsdelivr.net (three.js), plus the files enclosure35_stl.js and enclosure_dims.js next to this page. Everything below the view stays complete.</div>
+      <div class="tools" role="toolbar" aria-label="3D view">
+        <button id="vSHC" aria-pressed="false">Live firmware</button>
+        <button id="vExplode" aria-pressed="false">Exploded view</button>
+        <button id="vCover" aria-pressed="true">Back cover</button>
+        <button id="vSection" aria-pressed="false">Section</button>
+        <button id="vBack" aria-pressed="false">Show the back</button>
+        <button id="vRot" aria-pressed="true">Slow rotation</button>
+        <button id="vScreen" aria-pressed="false">Screen: Drive</button>
+        <button id="vNight" aria-pressed="false">Night capture</button>
+      </div>
+    </div>
+    <aside class="bench" id="bench" aria-label="Test bench">
+      <h3>Test bench</h3>
+      <div class="state" id="benchState">Loading the firmware (6.5 MB)…</div>
+      <div><p class="k">Go to a screen</p><div class="chips" id="screens"></div></div>
+      <div><p class="k">Simulated OnStepX</p><div class="chips">
+        <button id="sMute" aria-pressed="false">Silent</button>
+        <button id="sWifi" aria-pressed="false">Wi-Fi cut</button>
+        <button id="sTime" aria-pressed="false">No time</button>
+        <button id="sEq" aria-pressed="false">GEM mount</button>
+        <button id="sErr" aria-pressed="false">Motor fault</button>
+        <button id="sFoc" aria-pressed="false">No focuser</button>
+        <button id="sRot" aria-pressed="false">No derotator</button>
+        <button id="sPark" class="go">Park it</button>
+      </div></div>
+      <div><p class="k">Hand controller hardware</p><div class="chips">
+        <button id="hUsb" aria-pressed="false">On USB</button>
+        <button id="hLow" aria-pressed="false">Battery 3.40 V</button>
+        <button id="hEmpty" aria-pressed="false">Battery 3.25 V</button>
+        <button id="hGps" aria-pressed="false">No GPS</button>
+        <button id="hFix" aria-pressed="false">GPS no fix</button>
+        <button id="hDht" aria-pressed="false">With DHT22</button>
+        <button id="hSound" aria-pressed="false">Buzzer sound</button>
+      </div></div>
+      <div class="chips"><button id="nominal" class="go">Back to nominal</button></div>
+      <p class="dims" id="status3d">Loading the STLs…</p>
+      <p class="dims" id="statusSHC" hidden></p>
+    </aside>
+  </div>
+  <div class="logs">
+    <div class="card"><h3>Screen messages</h3><ol id="msgLog"></ol></div>
+    <div class="card"><h3>LX200 sent to OnStepX <button class="try" id="reads" aria-pressed="false" style="margin:0 0 0 8px">+ periodic reads</button></h3><ul id="lxLog"></ul></div>
+  </div>
+
+  <h2 id="guide">User guide</h2>
+  <p class="intro">Each card has a button that opens the matching screen on the 3D hand controller above.</p>
+  <div class="guide">
+    <div class="card"><h3>1 · First power-on <small>⏻</small></h3><ul>
+      <li>Press ⏻: the board powers itself (Q1), then holds itself (PWR_HOLD). Short press later: screen sleep / wake. <b>Held 2 s: power off.</b></li>
+      <li>At the first start with a new display, the touch panel <b>calibrates itself</b>: touch the crosses with the stylus.</li>
+      <li>Battery alert at 3.45 V (3 beeps), automatic power-off at 3.30 V (6 beeps), unless on USB.</li></ul>
+      <button class="try" data-screen="start">Open: start</button></div>
+    <div class="card"><h3>2 · Join OnStepX <small>Wi-Fi</small></h3><ul>
+      <li>OnStepX (ESP32) in <code>SERIAL_IP_MODE WIFI_ACCESS_POINT</code>: network <b>OnStep</b>, password <b>password</b>, address <b>192.168.0.1</b>, port <b>9999</b>. The hand controller joins it by itself.</li>
+      <li>Home router instead: <code>WIFI_VIA_ROUTER</code> in the hand controller, <code>SERIAL_IP_MODE BOTH</code> and a fixed <code>STA_IP_ADDR</code> on OnStepX.</li>
+      <li>Port 9999 takes one client: other apps (ASCOM, SkySafari) use 9996 to 9998, or the hand controller's ASCOM bridge (port 4030).</li></ul>
+      <button class="try" data-screen="link">Open: link</button></div>
+    <div class="card"><h3>3 · Drive <small>arrows · speeds · STOP</small></h3><ul>
+      <li>Arrow held: <code>:Rn#</code> then <code>:Mn#</code>…; released: <code>:Qn#</code>. Ten speeds = OnStepX's <code>:R0</code> … <code>:R9</code> (×¼ to GOTO).</li>
+      <li><b>STOP</b> tap: mount and tracking (<code>:Q# :Td#</code>). <b>STOP held 1 s = emergency stop</b>: axes, tracking, focuser and derotator all ramp down. There is no hardware emergency-stop button.</li>
+      <li>TRACKING toggles <code>:Te#</code> / <code>:Td#</code>.</li></ul>
+      <button class="try" data-screen="drive">Open: drive</button></div>
+    <div class="card"><h3>4 · Joystick <small>eye at the eyepiece</small></h3><ul>
+      <li>Push: the dominant axis moves at the chosen speed; half travel = two speeds slower.</li>
+      <li>Click: fine centring (×2, one beep) / search (×48, two beeps).</li>
+      <li>Held 1 s: CENTRE during an alignment, STOP elsewhere. It never wakes the screen (dark adaptation).</li></ul>
+      <button class="try" data-screen="drive">Try it on the 3D joystick</button></div>
+    <div class="card"><h3>5 · GOTO <small>catalogues</small></h3><ul>
+      <li>Sky: planets, Moon, 8,404 stars, 13,372 deep-sky objects, doubles, variables, clusters; filtered by the altitude limits.</li>
+      <li>The target goes out in <b>apparent coordinates of date</b> (<code>:Sr :Sd :MS</code>); OnStepX does the slew, ramps and limits.</li>
+      <li>Terrestrial / alt-az targets use <code>:Sz :Sa :MA</code>.</li></ul>
+      <button class="try" data-screen="sky">Open: sky</button></div>
+    <div class="card"><h3>6 · Alignment <small>from home</small></h3><ul>
+      <li>Start <b>from home</b> (tube at its home position): OnStepX's own alignment, <code>:A1</code> … <code>:A9</code>, then <code>:A+</code> for each star.</li>
+      <li>6 stars is the best accuracy / time compromise; the model is kept with <code>:AW</code>.</li></ul>
+      <button class="try" data-screen="align">Open: align</button></div>
+    <div class="card"><h3>7 · Park, home, limits, PEC <small>OnStepX settings</small></h3><ul>
+      <li>Mount › OnStepX settings: tracking rates and compensation, meridian flip, limits, home and park, GOTO speed, PEC, backlash, auxiliary outputs, sites, misc.</li>
+      <li>Everything is read from OnStepX and written back to it: the hand controller stores no motor parameters.</li></ul>
+      <button class="try" data-screen="onstep">Open: OnStepX settings</button></div>
+    <div class="card"><h3>8 · Focuser, derotator, dew <small>accessories</small></h3><ul>
+      <li>Focuser <code>:F…</code>, derotator <code>:r…</code> (moves by an absolute <code>:rS</code>), dew heaters on OnStepX's auxiliary outputs (<code>:GXY/:GXX/:SXX</code>).</li></ul>
+      <button class="try" data-screen="acc">Open: accessories</button></div>
+    <div class="card"><h3>9 · Site, time, GPS <small>NEO-M8N</small></h3><ul>
+      <li>Time from OnStepX, from the GPS, from NTP (router mode) or by hand; site from the GPS on request.</li>
+      <li>The GPS baud rate is found automatically (9600, 38400, 115200…).</li>
+      <li>Night mode (moon, top right): the "Night · Copper" palette, no blue.</li></ul>
+      <button class="try" data-screen="site">Open: site</button></div>
+  </div>
+
+  <h2 id="wiring">Wiring — hover a connector</h2>
+  <div class="wiring" id="wiringBox">
+  <figure>
+    <div class="drawing">
+    <svg class="large" viewBox="0 0 1000 560" role="img" aria-label="Wiring of the HC-TFT board: J1 USB-C, J2 battery, J8 lamp, J3 power button, J7 GPS, J9 joystick, J4 display, U1 ESP32 DevKit">
+      <rect x="20" y="20" width="330" height="520" rx="12" fill="var(--mask)"/>
+      <text x="40" y="455" style="fill:var(--silk)">HC-TFT rev. C · back side</text>
+      <g class="w" data-c="U1"><rect x="150" y="80" width="120" height="220" rx="6" fill="#16181C" stroke="var(--silk)" stroke-width=".8"/><text x="210" y="180" text-anchor="middle" style="fill:var(--silk)">ESP32</text><text x="210" y="198" text-anchor="middle" class="sub" style="fill:var(--silk)">DevKit 38 p.</text><text x="210" y="216" text-anchor="middle" class="sub" style="fill:var(--silk)">plugs in</text></g>
+      <g class="w" data-c="J1"><rect x="60" y="20" width="44" height="16" rx="4" fill="#A9B0BA"/><text x="60" y="72" style="fill:var(--silk)">J1 USB-C</text>
+        <path d="M82 36 C82 60 700 40 760 60" fill="none" stroke="#8A95A8" stroke-width="3" stroke-dasharray="6 5"/><text x="770" y="64">5 V charger, 1 A</text></g>
+      <g class="w" data-c="J2"><rect x="330" y="96" width="20" height="40" rx="2" fill="#EDE8DA"/><text x="322" y="110" text-anchor="end" style="fill:var(--silk)">J2 BAT+</text><text x="322" y="130" text-anchor="end" style="fill:var(--silk)">BAT−</text>
+        <path d="M350 106 C500 106 520 110 640 110" fill="none" stroke="#D8342C" stroke-width="3.2"/><path d="M350 126 C500 126 520 130 640 130" fill="none" stroke="currentColor" stroke-width="3.2"/>
+        <rect x="640" y="96" width="300" height="46" rx="23" fill="none" stroke="currentColor"/><text x="790" y="124" text-anchor="middle">18650 holder 74.5 mm (JST-PH)</text></g>
+      <g class="w" data-c="J8"><rect x="330" y="168" width="20" height="40" rx="2" fill="#0B0F16"/><text x="322" y="182" text-anchor="end" style="fill:var(--silk)">J8 LED+</text><text x="322" y="202" text-anchor="end" style="fill:var(--silk)">LED−</text>
+        <path d="M350 178 C500 178 520 182 640 182" fill="none" stroke="#D8342C" stroke-width="3.2"/><path d="M350 198 C500 198 520 202 640 202" fill="none" stroke="#8B5A2B" stroke-width="3.2"/>
+        <circle cx="660" cy="192" r="12" fill="#FF3B28"/><text x="684" y="188">Red lamp, 1 W 640–660 nm</text><text x="684" y="204" class="sub">170 mA constant, PWM on GPIO12</text></g>
+      <g class="w" data-c="J3"><rect x="330" y="240" width="20" height="80" rx="2" fill="#0B0F16"/>
+        <text x="322" y="254" text-anchor="end" style="fill:var(--silk)">J3 PWR</text><text x="322" y="274" text-anchor="end" style="fill:var(--silk)">GND</text><text x="322" y="294" text-anchor="end" style="fill:var(--silk);opacity:.6">LED+</text><text x="322" y="314" text-anchor="end" style="fill:var(--silk);opacity:.6">GND</text>
+        <path d="M350 250 C500 250 520 254 640 254" fill="none" stroke="#D39A12" stroke-width="3.2"/><path d="M350 270 C500 270 520 274 640 274" fill="none" stroke="currentColor" stroke-width="3.2"/>
+        <path d="M350 290 C500 290 520 294 640 294" fill="none" stroke="#D8342C" stroke-width="2" stroke-dasharray="6 5"/><path d="M350 310 C500 310 520 314 640 314" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 5"/>
+        <circle cx="662" cy="284" r="16" fill="none" stroke="currentColor"/><text x="662" y="289" text-anchor="middle">⏻</text><text x="690" y="270">Power button 16 mm, momentary NO</text><text x="690" y="288" class="sub">J3-1 / J3-2 · ring (dashed) only for a lit button</text><text x="690" y="304" class="sub">no emergency-stop button, input or jumper</text></g>
+      <g class="w" data-c="J7"><rect x="330" y="350" width="20" height="60" rx="2" fill="#0B0F16"/>
+        <text x="322" y="364" text-anchor="end" style="fill:var(--silk)">J7 3V3</text><text x="322" y="384" text-anchor="end" style="fill:var(--silk)">TX</text><text x="322" y="404" text-anchor="end" style="fill:var(--silk)">GND</text>
+        <path d="M350 360 C500 360 520 364 640 364" fill="none" stroke="#D8342C" stroke-width="3.2"/><path d="M350 380 C500 380 520 384 640 384" fill="none" stroke="#2E9E5B" stroke-width="3.2"/><path d="M350 400 C500 400 520 404 640 404" fill="none" stroke="currentColor" stroke-width="3.2"/>
+        <rect x="640" y="352" width="60" height="60" rx="4" fill="none" stroke="currentColor"/><text x="670" y="387" text-anchor="middle" class="sub">GPS</text><text x="712" y="368">NEO-M8N: VCC · TXD · GND</text><text x="712" y="386" class="sub">TXD → GPIO17, rate found automatically</text><text x="712" y="402" class="sub">3.3 V only · RXD, SDA, SCL free</text></g>
+      <g class="w" data-c="J9"><rect x="330" y="436" width="20" height="96" rx="2" fill="#EDE8DA"/>
+        <text x="322" y="450" text-anchor="end" style="fill:var(--silk)">J9 GND</text><text x="322" y="468" text-anchor="end" style="fill:var(--silk)">3V3</text><text x="322" y="486" text-anchor="end" style="fill:var(--silk)">VRX</text><text x="322" y="504" text-anchor="end" style="fill:var(--silk)">VRY</text><text x="322" y="522" text-anchor="end" style="fill:var(--silk)">SW</text>
+        <path d="M350 446 L640 446" stroke="currentColor" stroke-width="3"/><path d="M350 464 L640 464" stroke="#D8342C" stroke-width="3"/><path d="M350 482 L640 482" stroke="#D39A12" stroke-width="3"/><path d="M350 500 L640 500" stroke="#2F7FD6" stroke-width="3"/><path d="M350 518 L640 518" stroke="#2E9E5B" stroke-width="3"/>
+        <circle cx="662" cy="482" r="18" fill="none" stroke="currentColor"/><circle cx="662" cy="482" r="7" fill="currentColor"/><text x="692" y="470">KY-023 joystick, straight cable</text><text x="692" y="488" class="sub">JST-XH on the board, Dupont on the module</text><text x="692" y="504" class="sub">its "+5V" pin gets 3.3 V · VRX 33, VRY 35, SW 13</text></g>
+      <g class="w" data-c="J4"><rect x="60" y="500" width="160" height="18" rx="3" fill="#0B0F16" stroke="var(--silk)" stroke-dasharray="4 3"/><text x="60" y="486" style="fill:var(--silk)">J4: display, other side</text></g>
+    </svg>
+    </div>
+    <figcaption><b>Five connectors, fourteen wires, nothing else.</b> No jumper anywhere. Dupont on the right-angle headers J3, J7, J8; keyed JST-PH for the battery (never a Dupont there: a reversal destroys the charger); JST-XH for the joystick. Plug J7 before J8. Annotated photo-realistic renders of the board: <a href="#pictures">Pictures</a>.</figcaption>
+  </figure>
+  <div class="table-wrap" style="margin-top:12px">
+    <table>
+      <thead><tr><th>Ref.</th><th>Pins (silkscreen)</th><th>Goes to</th><th>ESP32</th><th>Watch out</th></tr></thead>
+      <tbody>
+        <tr data-c="J1"><td class="g">J1</td><td class="g">USB-C, 5 V</td><td>Charger (top of the enclosure)</td><td class="g">VBUS → GPIO39 (÷2)</td><td class="n">Charges at 1 A (TP4056); flashing goes through the DevKit's own USB</td></tr>
+        <tr data-c="J2"><td class="g">J2</td><td class="g">1 BAT+ · 2 BAT−</td><td>18650 holder</td><td class="g">VBAT → GPIO36 (÷2)</td><td class="n">3.7 V (1S) only; check polarity with a multimeter; BAT− is not ground</td></tr>
+        <tr data-c="J8"><td class="g">J8</td><td class="g">1 LED+ · 2 LED−</td><td>1 W red LED</td><td class="g">GPIO12 (Q8)</td><td class="n">170 mA constant current: no resistor</td></tr>
+        <tr data-c="J3"><td class="g">J3</td><td class="g">1 PWR · 2 GND · 3 LED+ · 4 GND</td><td>⏻ (NO contact)</td><td class="g">GPIO34 sense, 25 hold, 26 ring</td><td class="n">Rev. B board: J3-5 / J3-6 stay empty, no jumper</td></tr>
+        <tr data-c="J7"><td class="g">J7</td><td class="g">1 3V3 · 2 TX · 3 GND</td><td>NEO-M8N GPS</td><td class="g">GPIO17 (UART2 RX)</td><td class="n">Never 5 V; its regulator must give ≥ 2.7 V from 3.3 V</td></tr>
+        <tr data-c="J9"><td class="g">J9</td><td class="g">GND · 3V3 · VRX · VRY · SW</td><td>KY-023</td><td class="g">33, 35 (ADC1), 13</td><td class="n">3.3 V, never 5 V</td></tr>
+        <tr data-c="J4"><td class="g">J4</td><td class="g">VCC … T_IRQ (14)</td><td>MSP3520, plugged in</td><td class="g">SPI 18/23/19, CS 5, DC 21, RST 4, T_CS 22, IRQ 14, BL 16</td><td class="n"><b>Bridge J1 of the module</b>; pin 9 SDO not connected (rev. B: bend it out)</td></tr>
+        <tr data-c="U1"><td class="g">U1</td><td class="g">GND row 1 × 19, 3V3 row 1 × 17</td><td>ESP32 DevKit 38 pins</td><td class="g">—</td><td class="n">Row spacing: 22.86 mm → "int. NodeMCU", 25.4 mm → "ext. DevKitC"</td></tr>
+      </tbody>
+    </table>
+  </div>
+  </div>
+
+  <h2 id="pictures">Pictures: the board, what plugs where, the parts to print</h2>
+  <p class="intro">Renders of the real fabrication files (KiCad 10, HC-TFT rev. C) and of the STLs to print (OpenSCAD). Click an image for full size.</p>
+  <style>
+    .gal{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+    .gal figure{padding:10px}
+    .gal img{width:100%;height:auto;border-radius:8px;background:#fff;display:block}
+    .gal.wide{grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr))}
+    .gal.wide img{background:#0A0E15}
+    .gal figcaption a{font-weight:600}
+  </style>
+  <h3 style="margin-top:6px">What plugs where</h3>
+  <div class="gal wide">
+    <figure><a href="img/connections_back.png"><img src="img/connections_back.png" alt="Back side of the HC-TFT rev. C board with the five cable connectors annotated: J2 battery, J3 power button, J7 GPS, J8 lamp, J9 joystick, plus USB-C, DevKit rows and buzzer" loading="lazy"></a>
+      <figcaption><b>Back side</b>: the five cables (J2 battery, J3 ⏻ on pins 1–2, J7 GPS, J8 lamp, J9 joystick), the DevKit rows, the buzzer. No jumper anywhere.</figcaption></figure>
+    <figure><a href="img/connections_front.png"><img src="img/connections_front.png" alt="Front side of the HC-TFT rev. C board: J4 display header, pin 1 VCC, pin 9 not connected" loading="lazy"></a>
+      <figcaption><b>Front side</b>: J4, where the 3.5″ MSP3520 plugs in. Bridge jumper J1 on the module before plugging it.</figcaption></figure>
+  </div>
+  <h3 style="margin-top:14px">The boards</h3>
+  <div class="gal">
+    <figure><a href="img/pcb_smd_back.png"><img src="img/pcb_smd_back.png" alt="HC-TFT rev. C SMD board, back side render" loading="lazy"></a><figcaption><b>HC-TFT rev. C</b> (SMD, assembled by JLCPCB) — back</figcaption></figure>
+    <figure><a href="img/pcb_smd_front.png"><img src="img/pcb_smd_front.png" alt="HC-TFT rev. C SMD board, front side render" loading="lazy"></a><figcaption><b>HC-TFT rev. C</b> — front</figcaption></figure>
+    <figure><a href="img/pcb_tht_back.png"><img src="img/pcb_tht_back.png" alt="HC-TFT-T rev. B through-hole board, back side render" loading="lazy"></a><figcaption><b>HC-TFT-T rev. B</b> (through-hole, solder it yourself) — back</figcaption></figure>
+    <figure><a href="img/pcb_tht_front.png"><img src="img/pcb_tht_front.png" alt="HC-TFT-T rev. B through-hole board, front side render" loading="lazy"></a><figcaption><b>HC-TFT-T rev. B</b> — front</figcaption></figure>
+  </div>
+  <h3 style="margin-top:14px">Parts to print</h3>
+  <div class="gal">
+    <figure><a href="img/stl_front_b.png"><img src="img/stl_front_b.png" alt="Front part of the enclosure, outside" loading="lazy"></a><figcaption><a href="downloads/stl/front.stl">front.stl</a> — black PETG/ASA, front panel on the bed, supports under the visor ceiling only</figcaption></figure>
+    <figure><a href="img/stl_front_a.png"><img src="img/stl_front_a.png" alt="Front part of the enclosure, inside with pillars and GPS cradle" loading="lazy"></a><figcaption>front.stl, inside: display pillars, GPS cradle, joystick and ⏻ seats</figcaption></figure>
+    <figure><a href="img/stl_back_cover_b.png"><img src="img/stl_back_cover_b.png" alt="Back cover, inside" loading="lazy"></a><figcaption><a href="downloads/stl/back_cover.stl">back_cover.stl</a> — joint plane on the bed</figcaption></figure>
+    <figure><a href="img/stl_back_cover_a.png"><img src="img/stl_back_cover_a.png" alt="Back cover, outside" loading="lazy"></a><figcaption>back_cover.stl, outside</figcaption></figure>
+    <figure><a href="img/stl_joystick_cover_a.png"><img src="img/stl_joystick_cover_a.png" alt="Joystick hole-cover ring" loading="lazy"></a><figcaption><a href="downloads/stl/joystick_cover.stl">joystick_cover.stl</a> — PETG</figcaption></figure>
+    <figure><a href="img/stl_foot_pad_a.png"><img src="img/stl_foot_pad_a.png" alt="Foot pad" loading="lazy"></a><figcaption><a href="downloads/stl/foot_pad.stl">foot_pad.stl</a> — TPU 95A, print 2</figcaption></figure>
+    <figure><a href="img/stl_joystick_template_a.png"><img src="img/stl_joystick_template_a.png" alt="Joystick test template" loading="lazy"></a><figcaption><a href="downloads/stl/joystick_template.stl">joystick_template.stl</a> — PETG, to try your joystick before printing the enclosure</figcaption></figure>
+  </div>
+  <p class="intro" style="margin-top:6px">Through-hole board: front and back cover in <a href="downloads/stl/tht/">downloads/stl/tht/</a> (front.stl, back_cover.stl); the other parts are the same.</p>
+
+  <h2 id="order">Order &amp; build</h2>
+  <div class="grid2">
+    <div class="card"><h3>The board (JLCPCB)</h3><p>SMD board <b>HC-TFT rev. C</b>, 72 × 90 mm, 2 layers, 1.6 mm, matte black mask, white silkscreen, ENIG; assembly <b>Bottom side only</b>, 51 parts.</p><ul>
+      <li>Gerber: <a href="downloads/pcb_smd_revC/HC-TFT_gerbers.zip"><code>HC-TFT_gerbers.zip</code></a> (upload as is)</li>
+      <li>BOM: <a href="downloads/pcb_smd_revC/HC-TFT_JLCPCB_BOM.csv"><code>HC-TFT_JLCPCB_BOM.csv</code></a> (Comment, Designator, Footprint, LCSC Part #)</li>
+      <li>CPL: <a href="downloads/pcb_smd_revC/HC-TFT_JLCPCB_CPL.csv"><code>HC-TFT_JLCPCB_CPL.csv</code></a> (Designator, Mid X, Mid Y, Layer, Rotation)</li>
+      <li>Hand-soldered: U1 headers, J2, J3, J7, J8, J4, J9, BZ1 (<a href="downloads/pcb_smd_revC/HC-TFT_hand_solder.csv"><code>HC-TFT_hand_solder.csv</code></a>).</li>
+      <li>Check in the preview: C7 (+), D1/D3/D6 cathodes, D5, U3/U4/U5/Q5 pin 1, J1 flush with the edge.</li></ul>
+      <p style="margin-top:8px">Solder-it-yourself alternative: <b>HC-TFT-T rev. B</b>, <a href="downloads/pcb_tht_revB/">downloads/pcb_tht_revB/</a> (bare board: Gerber only; JLCPCB BOM/CPL if you want it soldered); its buzzer needs <code>BEEP_FREQUENCY_HZ 2400</code>.</p></div>
+    <div class="card"><h3>3D printing</h3><ul>
+      <li><a href="downloads/stl/front.stl"><code>front.stl</code></a> — black PETG or ASA, front panel on the bed, supports only under the visor ceiling.</li>
+      <li><code>back_cover.stl</code> — joint plane on the bed.</li>
+      <li><code>joystick_cover.stl</code> (PETG), 2 × <code>foot_pad.stl</code> (TPU 95A), <code>joystick_template.stl</code> to try the joystick first.</li>
+      <li>Through-hole board: <code>stl_3.5in_tft/tht/</code> front and back cover.</li>
+      <li>Measure the joystick and the GPS board before printing (<code>joy_*</code>, <code>gps_board</code> in the <code>.scad</code>).</li></ul></div>
+  </div>
+  <div class="table-wrap" style="margin-top:12px">
+    <table>
+      <thead><tr><th>Part</th><th>Qty</th><th>Where</th><th>Price</th><th>Requirement</th></tr></thead>
+      <tbody>
+        <tr class="group"><td colspan="5">Modules</td></tr>
+        <tr><td>3.5″ SPI display <b>lcdwiki MSP3520</b> (ILI9488 + XPT2046, resistive)</td><td class="g">1</td><td>Elecrow / AliExpress</td><td class="g">≈ $9.50</td><td class="n">ILI9488 only (no ST7796, no MSP3521, no capacitive); <b>bridge J1</b></td></tr>
+        <tr><td>ESP32 DevKit 38 pins, WROOM-32</td><td class="g">1</td><td>BerryBase (NodeMCU-32S)</td><td class="g">6.80 €</td><td class="n">no WROVER / S3 / C3 / 30 pins; measure the row spacing</td></tr>
+        <tr><td>u-blox NEO-M8N "GPS module with compass", 32 × 32 mm</td><td class="g">1</td><td>AliExpress</td><td class="g">—</td><td class="n">NMEA output; 3.3 V-capable regulator (not AMS1117)</td></tr>
+        <tr><td>Joystick KY-023 / HW-504</td><td class="g">1</td><td>funduinoshop</td><td class="g">1.29 €</td><td class="n">measure board and holes</td></tr>
+        <tr><td>Push button 16 mm momentary NO, short (≤ 22 mm under the panel)</td><td class="g">1</td><td>AliExpress 1005006775237546</td><td class="g">≈ 0.70 €</td><td class="n">no LED ring needed</td></tr>
+        <tr class="group"><td colspan="5">Power and lamp</td></tr>
+        <tr><td>18650 cell, 3,000–3,500 mAh (bare is fine: the board protects it)</td><td class="g">1</td><td>batterie-boutique.fr / Nkon</td><td class="g">10–20 €</td><td class="n">3.7 V 1S only; never a fake "9,900 mAh"</td></tr>
+        <tr><td>1 × 18650 holder with wires, <b>74.5 mm</b> (SparkFun PRT-12899)</td><td class="g">1</td><td>Opencircuit</td><td class="g">4.75 €</td><td class="n">a 76 mm holder probably does not fit</td></tr>
+        <tr><td>1 W red LED 640–660 nm on 20 mm star + 20 mm 30° optic with holder</td><td class="g">1</td><td>Avonec + eBay/Amazon</td><td class="g">1.64 € + a few €</td><td class="n">—</td></tr>
+        <tr class="group"><td colspan="5">To solder on the board</td></tr>
+        <tr><td>Female headers 8.5 mm (1 × 19, 1 × 17, 1 × 14), right-angle male header 1 × 40, JST S2B-PH-K, JST B5B-XH-A</td><td class="g">—</td><td>Reichelt</td><td class="g">≈ 2.40 €</td><td class="n">J4 at 8.5 mm: 11.04 mm display-to-board</td></tr>
+        <tr><td>Buzzer CUI / Same Sky CMT-8504-100-SMT-TR</td><td class="g">1</td><td>DigiKey / LCSC</td><td class="g">1.58 €</td><td class="n">rated 4 kHz (firmware default)</td></tr>
+        <tr class="group"><td colspan="5">Fasteners, wiring, printing</td></tr>
+        <tr><td>Heat-set inserts M2.5 × 3.5; M2.5 × 25 / × 16 countersunk; M2.5 × 6; 4 × M3 × 6 self-tapping (display); M2 × 8 and ST2.6 × 4 self-tapping; 2 cable ties</td><td class="g">—</td><td>dhm, Marleva, AliExpress, Gotronic</td><td class="g">≈ 10 €</td><td class="n">no standoffs for the 3.5″</td></tr>
+        <tr><td>26 AWG silicone wire, JST-PH and JST-XH housings + contacts, Dupont housings 1 × 2 / 1 × 3 / 1 × 5 + contacts</td><td class="g">—</td><td>Gotronic, AliExpress</td><td class="g">≈ 20 €</td><td class="n">no jumper to buy</td></tr>
+        <tr><td>Black PETG 1 kg, TPU 95A, hot glue, cyanoacrylate, POM-tip stylus</td><td class="g">—</td><td>3DJake, Gotronic, AliExpress</td><td class="g">≈ 35 €</td><td class="n">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="intro" style="margin-top:6px">Parts ≈ 145 € (of which 31 € of filament), ≈ 185–215 € with shipping. Full list with links and survey dates: <a href="downloads/SHOPPING_LIST.md">SHOPPING_LIST.md</a> (SMD board) and <a href="downloads/SHOPPING_LIST_THT.md">SHOPPING_LIST_THT.md</a> (through-hole board).</p>
+
+  <h3 style="margin-top:18px">Build checklist <span class="intro" style="font:400 13px Barlow">(ticks are kept in this browser)</span></h3>
+  <ol class="steps" id="steps">
+    <li><label><input type="checkbox"><span class="t"><b>Display:</b> check "ILI9488" on the module, then <b>short jumper J1</b> (0 Ω pads next to the XC6206 regulator). Never feed it 5 V afterwards.</span></label></li>
+    <li><label><input type="checkbox"><span class="t"><b>Rev. B board only:</b> bend pin 9 (SDO) of the display out of J4; leave J3-5 / J3-6 empty.</span></label></li>
+    <li><label><input type="checkbox"><span class="t"><b>DevKit:</b> measure its row spacing, solder the 1 × 17 header in the 3V3 row "int. NodeMCU" (22.86 mm) or "ext. DevKitC" (25.4 mm), the 1 × 19 in the GND row; USB at the top.</span></label></li>
+    <li><label><input type="checkbox"><span class="t"><b>Connectors:</b> J2, J3 (1 × 4), J7, J8 right-angle, J9 straight, BZ1 (+ on the marked pad), then J4 on the <b>front</b> side.</span></label></li>
+    <li><label><input type="checkbox"><span class="t"><b>Before the battery:</b> USB-C only → D5 lights while charging; ⏻ pressed → 3.3 V on the DevKit 3V3 pin.</span></label></li>
+    <li><label><input type="checkbox"><span class="t"><b>GPS:</b> fed from 3.3 V on the bench, its regulator output ≥ 2.7 V; wires VCC → J7-1, TXD → J7-2, GND → J7-3.</span></label></li>
+    <li><label><input type="checkbox"><span class="t"><b>Flash:</b> <code>Config.h</code> (site, Wi-Fi mode, eyepieces), then <code>pio run -t upload</code> through the DevKit USB (or the Arduino IDE, "Huge APP" partition).</span></label></li>
+    <li><label><input type="checkbox"><span class="t"><b>OnStepX side:</b> <code>SERIAL_IP_MODE WIFI_ACCESS_POINT</code> (or BOTH), network OnStep / password / 192.168.0.1:9999.</span></label></li>
+    <li><label><input type="checkbox"><span class="t"><b>Print and fit:</b> inserts, display screwed on the 4 pillars (M3 × 6 self-tapping), board onto J4, battery holder, GPS (antenna to the front panel, 2 dots of hot glue), joystick, ⏻, lamp.</span></label></li>
+    <li><label><input type="checkbox"><span class="t"><b>First start:</b> touch calibration, Link screen shows OnStepX, arrows move the right way (<code>JOYSTICK_INVERT_*</code> if not), STOP held 1 s stops everything.</span></label></li>
+  </ol>
+
+  <h2 id="checks">What was checked (04/11/2026)</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Item</th><th>Result</th><th>How</th></tr></thead>
+      <tbody>
+        <tr class="group"><td colspan="3">Firmware</td></tr>
+        <tr><td>Build ESP32, 3.5″ and 2.8″</td><td><span class="st ok">OK</span></td><td class="n">PlatformIO, 0 warnings; flash 75.3 % of 3 MB, RAM 31.4 %</td></tr>
+        <tr><td>LX200 protocol against the real OnStepX source (main, 10.29c, af1d26b)</td><td><span class="st ok">4 bugs fixed</span></td><td class="n"><code>:Sz/:Sa</code> rejected (apostrophe before the seconds) → ':'; <code>:rr</code> never parsed by OnStepX → absolute <code>:rS</code>; <code>:MN#</code> result read inverted; arrow speed cache bypassed by <code>:RA/:RE</code> and <code>:Rn</code> from settings</td></tr>
+        <tr><td>Robustness</td><td><span class="st ok">fixed</span></td><td class="n">late reply after a timeout → clean reconnection; init errors 13–15 no longer fail every GOTO; a GOTO never seen running is reported failed; intervalometer state; GPS automatic baud rate; buzzer at its rated 4 kHz</td></tr>
+        <tr><td>Emergency stop</td><td><span class="st ok">removed from hardware</span></td><td class="n">no input, no jumper; STOP held 1 s on the interface (axes, tracking, focuser, derotator)</td></tr>
+        <tr><td>Mount bench against the simulated OnStepX (TCP)</td><td><span class="st ok">0 failure</span></td><td class="n"><code>tests/check_onstepx.py</code>, new alt-az GOTO test included</td></tr>
+        <tr><td>Interface bench: every gesture → the right LX200</td><td><span class="st ok">0 failure</span></td><td class="n"><code>tests/check_interface_osx.py</code></td></tr>
+        <tr><td>Every screen and every touch zone, 3.5″</td><td><span class="st ok">30 screens, 467 zones</span></td><td class="n"><code>tests/preview_screens.py --35</code></td></tr>
+        <tr class="group"><td colspan="3">Boards</td></tr>
+        <tr><td>HC-TFT rev. C (SMD)</td><td><span class="st ok">DRC 0 / 0 / 0</span></td><td class="n">0 errors, 0 unconnected, 0 schematic mismatches; <code>check_design.py</code> 232 / 232; JLCPCB CPL 59 parts, 0 gaps</td></tr>
+        <tr><td>HC-TFT-T rev. B (through-hole)</td><td><span class="st ok">DRC 0 / 0 / 0</span></td><td class="n"><code>check_design.py</code> 175 / 175; CPL 52 parts, 0 gaps</td></tr>
+        <tr class="group"><td colspan="3">Display and parts (datasheets read)</td></tr>
+        <tr><td>MSP3520: ILI9488 + XPT2046, 14-pin order = J4, 56.34 × 98 mm, holes 49.5 × 92</td><td><span class="st ok">compatible</span></td><td class="n">lcdwiki page, schematic and drawing; init sequence identical to TFT_eSPI ILI9488_Init.h, 18-bit pixels (the only SPI format of the ILI9488)</td></tr>
+        <tr><td>MSP3520 at 3.3 V</td><td><span class="st opt">bridge J1</span></td><td class="n">schematic note: "VCC 3.3 V: J1 shorted"</td></tr>
+        <tr><td>ILI9488 SDO on the shared MISO</td><td><span class="st ok">fixed in rev. C</span></td><td class="n">TFT_eSPI issue 1431: "display SDO must be left disconnected"</td></tr>
+        <tr><td>Touch XPT2046 at 2.5 MHz, display at 27 MHz</td><td><span class="st ok">OK</span></td><td class="n">separate CS, clock switched per transaction</td></tr>
+        <tr><td>DevKit row labels</td><td><span class="st ok">fixed in rev. C</span></td><td class="n">DevKitC V4 = 25.4 mm, NodeMCU-32S / clones = 22.86 mm</td></tr>
+        <tr><td>Battery holder 76 mm (BerryBase)</td><td><span class="st opt">replaced</span></td><td class="n">enclosure drawn for 74.5 mm (SparkFun PRT-12899)</td></tr>
+        <tr><td>Enclosure collision test (display, board, battery, joystick at its stops)</td><td id="collision"><span class="st ok">no contact (SMD and THT)</span></td><td class="n">OpenSCAD, <code>part="check"</code>, <code>test="full"</code>, SMD and THT boards</td></tr>
+        <tr class="group"><td colspan="3">Not yet checked on real hardware</td></tr>
+        <tr><td colspan="3" class="n">A real OnStepX (only its source and a simulator), the display orientation and colours on a real MSP3520 (<code>DISPLAY_FLIPPED</code> if upside down), the axis directions of an ASCOM MoveAxis, the GPS module you receive.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h2 id="files">Files</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>What it is</th></tr></thead>
+      <tbody>
+        <tr class="group"><td colspan="2">SMD board HC-TFT rev. C — JLCPCB, assembly Bottom side</td></tr>
+        <tr><td><a href="downloads/pcb_smd_revC/HC-TFT_gerbers.zip">HC-TFT_gerbers.zip</a></td><td class="n">Gerber + drill files, 2 layers, 72 × 90 mm</td></tr>
+        <tr><td><a href="downloads/pcb_smd_revC/HC-TFT_JLCPCB_BOM.csv">HC-TFT_JLCPCB_BOM.csv</a></td><td class="n">JLCPCB BOM, 25 lines with LCSC codes (51 parts placed)</td></tr>
+        <tr><td><a href="downloads/pcb_smd_revC/HC-TFT_JLCPCB_CPL.csv">HC-TFT_JLCPCB_CPL.csv</a></td><td class="n">JLCPCB pick-and-place, Bottom layer</td></tr>
+        <tr><td><a href="downloads/pcb_smd_revC/HC-TFT_hand_solder.csv">HC-TFT_hand_solder.csv</a></td><td class="n">The 8 parts to solder yourself</td></tr>
+        <tr class="group"><td colspan="2">Through-hole board HC-TFT-T rev. B</td></tr>
+        <tr><td><a href="downloads/pcb_tht_revB/HC-TFT-T_gerbers.zip">HC-TFT-T_gerbers.zip</a></td><td class="n">Gerber + drill files (order bare, no assembly)</td></tr>
+        <tr><td><a href="downloads/pcb_tht_revB/HC-TFT-T_JLCPCB_BOM.csv">BOM</a> · <a href="downloads/pcb_tht_revB/HC-TFT-T_JLCPCB_CPL.csv">CPL</a> · <a href="downloads/pcb_tht_revB/HC-TFT-T_hand_solder.csv">hand solder</a></td><td class="n">Only for JLCPCB "THT assembly" (optional)</td></tr>
+        <tr class="group"><td colspan="2">Enclosure (3.5″ MSP3520)</td></tr>
+        <tr><td><a href="downloads/stl/">downloads/stl/</a></td><td class="n">front, back_cover, joystick_cover, foot_pad, joystick_template; <code>tht/</code> for the through-hole board</td></tr>
+        <tr class="group"><td colspan="2">Shopping</td></tr>
+        <tr><td><a href="downloads/SHOPPING_LIST.md">SHOPPING_LIST.md</a> · <a href="downloads/SHOPPING_LIST_THT.md">SHOPPING_LIST_THT.md</a></td><td class="n">Every part, with requirements, links and prices surveyed</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="intro" style="margin-top:8px">The firmware on this page is built with a neutral site (Paris) and the factory OnStepX Wi-Fi settings.</p>
+</div>
+
+<script src="enclosure_dims.js"></script>
+<script src="enclosure35_stl.js"></script>
+<script>
+setTimeout(() => { if (!window.__3d) document.getElementById('noWebgl').style.display = 'grid'; }, 9000);
+</script>
+<script type="importmap">{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
+<script type="module">
+// remote3d.js — the real hand controller in 3D for SHC_REMOTE.html: the exported STLs (front, back cover), the
+// MSP3520 display, the HC-TFT board, battery, KY-023 joystick, ⏻ and GPS, dimensioned by the OpenSCAD file
+// (enclosure_dims.js). Extracted from ENCLOSURE_ONSTEPX_35.html (same code); here the real firmware
+// (WebAssembly) is switched on on the glass as soon as the scene is ready.
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const C = window.ENCLOSURE, S = window.STL, host = document.getElementById('scene'), status = document.getElementById('status3d');
+if (!C || !S) { document.getElementById('noWebgl').style.display = 'grid'; throw new Error('enclosure_dims.js or enclosure35_stl.js missing'); }
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ antialias: true }); } catch (e) { document.getElementById('noWebgl').style.display = 'grid'; throw e; }
+window.__3d = true;
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.localClippingEnabled = true;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.setClearColor(0x080B11);
+host.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(renderer), .04).texture;
+scene.add(new THREE.HemisphereLight(0x8090A8, 0x0B0D12, .5));
+const keyLight = new THREE.DirectionalLight(0xffffff, 1.6); keyLight.position.set(6, 10, 14); scene.add(keyLight);
+const backLight = new THREE.DirectionalLight(0x6AA8FF, .8); backLight.position.set(-8, 4, -10); scene.add(backLight);
+const camera = new THREE.PerspectiveCamera(30, 1, .1, 300);
+const FRONT = new THREE.Vector3(10, 2, 52), BACK = new THREE.Vector3(-10, 2, -50);
+camera.position.copy(FRONT);
+const ctl = new OrbitControls(camera, renderer.domElement); ctl.enableDamping = true; ctl.autoRotate = true; ctl.autoRotateSpeed = .6;
+
+// Frame: STL in mm (X to the right seen from the front, Y upwards, Z from the glass towards the back cover), scene in cm, centred,
+// front face turned towards +Z. The parts drawn here (display, board, battery) are dimensioned in the OpenSCAD frame, which
+// the STLs mirrored (module output()): STL X = L - OpenSCAD X.
+// Seen from the front (from Z < 0 of the STL), STL X grows towards the LEFT: the scene therefore turns 180° around Y (X and Z
+// inverted together — a rotation, not a mirror). XS: OpenSCAD coordinate -> STL X (mirror) -> scene.
+const X = x => (C.L / 2 - x) / 10, Y = y => (y - C.H / 2) / 10, Z = z => -(z - C.E / 2) / 10, XS = x => X(C.L - x);
+const plane = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0);   // section: keeps X < 0 (left half seen from the front)
+const section = { on: false };
+const mat = (color, r = .55, m = 0, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: r, metalness: m, side: THREE.DoubleSide, clippingPlanes: [], ...extra });
+const all = [];
+const reg = m => { all.push(m); return m; };
+
+function stl(name) {   // Int16, 1/100 mm, 9 per triangle -> scene geometry
+  const b = atob(S[name]), n = b.length / 2, v = new Float32Array(n);
+  const dv = new DataView(new ArrayBuffer(b.length)); for (let i = 0; i < b.length; i++) dv.setUint8(i, b.charCodeAt(i));
+  for (let i = 0; i < n; i += 3) {
+    v[i] = X(dv.getInt16(2 * i, true) / 100); v[i + 1] = Y(dv.getInt16(2 * i + 2, true) / 100); v[i + 2] = dv.getInt16(2 * i + 4, true) / 100;
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(v, 3)); return g;
+}
+const groupFront = new THREE.Group(), groupCover = new THREE.Group(), inside = new THREE.Group();
+scene.add(groupFront, groupCover, inside);
+let nbTri = 0;
+for (const [name, grp, colour, dz] of [['front', groupFront, 0x1B1F26, 0], ['back_cover', groupCover, 0x2B313B, C.J]]) {
+  if (!S[name]) continue;
+  const g = stl(name), p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) p.setZ(i, Z(p.getZ(i) + dz));   // back cover: exported lying on its joint plane
+  g.computeVertexNormals(); nbTri += p.count / 3;
+  grp.add(reg(new THREE.Mesh(g, mat(colour, .62))));
+}
+
+// MSP3520 display: board, glass, image (capture from the firmware bench, 320 x 480 on the active area)
+const box = (x0, y0, z0, w, h, d, m) => { const o = reg(new THREE.Mesh(new THREE.BoxGeometry(w / 10, h / 10, d / 10), m));
+  o.position.set(XS(x0 + w / 2), Y(y0 + h / 2), Z(z0 + d / 2)); inside.add(o); return o; };
+const ze = C.P + C.screen_th - 1.6;
+box(C.L / 2 - C.screen_pcb[0] / 2, C.screen_bottom, ze, C.screen_pcb[0], C.screen_pcb[1], 1.6, mat(0x1B4F9A, .5));
+box(C.glass_c[0] - C.screen_glass[0] / 2, C.glass_c[1] - C.screen_glass[1] / 2, C.P, C.screen_glass[0], C.screen_glass[1], ze - C.P, mat(0x05070A, .3));
+// the image on the glass: one of the captures from the firmware bench (window.SCREENS35, data URI: no "canvas tainted" in file://)
+const S35 = window.SCREENS35 || {}, loader = new THREE.TextureLoader(), textures = {};
+const glassImg = reg(new THREE.Mesh(new THREE.PlaneGeometry(C.screen_aa[0] / 10, C.screen_aa[1] / 10), new THREE.MeshBasicMaterial({ color: 0x000000, clippingPlanes: [] })));
+glassImg.position.set(XS(C.screen_aa_c[0]), Y(C.screen_aa_c[1]), Z(C.P) + .012); inside.add(glassImg);
+const view = { screen: 'drive', night: false };
+function setScreen() {
+  const k = view.screen + (view.night ? '_night' : ''); if (!S35[k]) return;
+  const apply = t => { glassImg.material.map = t; glassImg.material.color.set(0xffffff); glassImg.material.needsUpdate = true; };
+  if (textures[k]) return apply(textures[k]);
+  loader.load(S35[k], t => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; textures[k] = t; apply(t); });
+}
+setScreen();
+
+// ---------- HW-504 joystick (KY-023), dimensions from print3d/enclosure_hc_tft.scad ----------
+// OpenSCAD frame: Z_joy = component face of its board, from the glass; the top of the head is at Z_joy - joy_height
+// (in front of the front panel, by joy_protrusion). Cap, neck, then the dome: spherical cap of radius joy_bell_R centred on
+// the lever pivot, between where it starts on the neck (joy_dome_top below the top) and its edge (joy_dome_edge).
+const joy = new THREE.Group(); inside.add(joy);
+const joyHead = new THREE.Group();   // cap, neck and dome: what tilts around the pivot
+{
+  const jx = XS(C.joy[0]), jy = Y(C.joy[1]), zTop = C.Z_joy - C.joy_height;
+  const cylZ = (d, z0, z1, m, seg = 40) => { const o = reg(new THREE.Mesh(new THREE.CylinderGeometry(d / 20, d / 20, (z1 - z0) / 10, seg), m));
+    o.rotation.x = Math.PI / 2; o.position.set(jx, jy, Z((z0 + z1) / 2)); joy.add(o); return o; };
+  const mHead = mat(0x1A1A1A, .7), mPcb = mat(0x1B4F9A, .5);
+  cylZ(C.joy_cap[0], zTop, zTop + C.joy_cap[1], mHead, 48);                                // cap, Ø 20
+  cylZ(C.joy_neck_d, zTop + C.joy_cap[1], zTop + C.joy_dome_top, mHead);                   // neck, Ø 11
+  { const R = C.joy_bell_R, zp = C.joy_Zpivot;                                             // dome (bell)
+    const t0 = Math.acos((zp - (zTop + C.joy_dome_top)) / R), t1 = Math.acos((zp - (zTop + C.joy_dome_edge)) / R);
+    const g = new THREE.SphereGeometry(R / 10, 48, 24, 0, Math.PI * 2, t0, t1 - t0);
+    const o = reg(new THREE.Mesh(g, mHead)); o.rotation.x = Math.PI / 2; o.position.set(jx, jy, Z(zp)); joy.add(o); }
+  joyHead.position.set(jx, jy, Z(C.joy_Zpivot));
+  for (const o of joy.children.slice(0, 3)) { o.position.sub(joyHead.position); joyHead.add(o); }
+  joy.add(joyHead);
+  // hole-cover ring, flush in its counterbore (cover = [thickness, face bore, back bore, outer radius])
+  { const k = C.cover, sh = new THREE.Shape(); sh.absarc(0, 0, k[3] / 10, 0, Math.PI * 2);
+    const h = new THREE.Path(); h.absarc(0, 0, k[1] / 10, 0, Math.PI * 2, true); sh.holes.push(h);
+    const o = reg(new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: k[0] / 10, bevelEnabled: false, curveSegments: 48 }), mat(0x6B7480, .5)));
+    o.position.set(jx, jy, Z(0)); o.rotation.y = Math.PI; joy.add(o); }
+  // module board (26.7 x 33.7) and mechanism: the mechanism block is INDICATIVE (17 x 17 x 10, not measured: TO MEASURE)
+  { const o = reg(new THREE.Mesh(new THREE.BoxGeometry(C.joy_board[0] / 10, C.joy_board[1] / 10, C.joy_board_th / 10), mPcb));
+    o.position.set(jx, jy, Z(C.Z_joy + C.joy_board_th / 2)); joy.add(o);
+    const b = reg(new THREE.Mesh(new THREE.BoxGeometry(1.7, 1.7, 1.0), mat(0x2A2F37, .6)));
+    b.position.set(jx, jy, Z(C.Z_joy - 5)); joy.add(b); }
+}
+// ⏻ (like the "ghosts" of the scad; no more hardware emergency stop)
+const powerButton = (() => { const p = C.power_btn, o = reg(new THREE.Mesh(new THREE.CylinderGeometry(13 / 20, 13 / 20, .2, 40), mat(0xA9B0BA, .3, .9)));
+  o.rotation.x = Math.PI / 2; o.position.set(XS(p[0]), Y(p[1]), Z(-1)); inside.add(o); return o; })();
+// GPS: 32 x 32 board and 25 x 25 antenna, facing the front panel
+box(C.gps[0], C.gps[1], C.gps[2], C.gps_board[0], C.gps_board[1], C.gps_board[2], mat(0x20262E, .5));
+box(C.gps[0] + (C.gps_board[0] - C.gps_antenna[0]) / 2, C.gps[1] + (C.gps_board[1] - C.gps_antenna[0]) / 2, C.gps_z0,
+      C.gps_antenna[0], C.gps_antenna[0], C.gps_antenna[1], mat(0xD8C0A8, .6));
+// J4 header, carrier board, battery
+box(C.L / 2 - 17.8, C.Y_J4 - 1.27, C.P + C.screen_th, 35.6, 2.54, C.Z_board - C.P - C.screen_th, mat(0x111111, .6));
+box(C.L / 2 - 36, C.H0 - 93, C.Z_board, 72, 90, 1.6, mat(0x173A2A, .5));
+{ const a = C.batt_dim, o = reg(new THREE.Mesh(new THREE.CylinderGeometry(a[2] / 20, a[2] / 20, a[1] / 10, 32), mat(0x1F7A8C, .35, .1)));
+  o.rotation.z = Math.PI / 2; o.position.set(XS(a[0] + a[1] / 2), Y(C.Y_batt), Z(C.Z_batt)); inside.add(o); }
+for (const p of C.screen_pillars) {   // M3 screw heads on the back of the module
+  const o = reg(new THREE.Mesh(new THREE.CylinderGeometry(.275, .275, .24, 20), mat(0xB8BEC6, .3, .9)));
+  o.rotation.x = Math.PI / 2; o.position.set(XS(p[0]), Y(p[1]), Z(C.P + C.screen_th + .12)); inside.add(o);
+}
+status.textContent = `STL: ${Object.keys(S).join(', ')} · ${Math.round(nbTri).toLocaleString('en')} triangles (front + back cover)`;
+
+// ---------- buttons ----------
+const toggle = (id, f) => { const b = document.getElementById(id); b.addEventListener('click', () => {
+  const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); f(on); }); };
+toggle('vExplode', on => { groupCover.position.z = on ? -3 : 0; groupFront.position.z = on ? 1.5 : 0; });
+toggle('vCover', on => { groupCover.visible = on; });
+toggle('vSection', on => { section.on = on; for (const m of all) { m.material.clippingPlanes = on ? [plane] : []; m.material.needsUpdate = true; } });
+toggle('vBack', on => { camera.position.copy(on ? BACK : FRONT); ctl.update(); });
+toggle('vRot', on => { ctl.autoRotate = on; });
+{ const ORDER = ['drive', 'speed', 'mount', 'onstep'], NAMES = { drive: 'Drive', speed: 'Speeds', mount: 'Mount', onstep: 'OnStepX' };
+  const b = document.getElementById('vScreen');
+  b.addEventListener('click', () => { view.screen = ORDER[(ORDER.indexOf(view.screen) + 1) % ORDER.length]; b.textContent = 'Screen: ' + NAMES[view.screen]; setScreen(); }); }
+toggle('vNight', on => { view.night = on; setScreen(); });
+window.__view3d = { view, joy, glassImg, camera, ctl };
+
+// ---------- SHC interface: the real firmware (WebAssembly) on the glass, to touch ----------
+// Click on the glass = touch (drag = scroll); drag the joystick head = KY-023, short click = its
+// button; click on ⏻ = power button. Elsewhere, the mouse keeps the view (rotate, zoom). Loaded on demand (6.5 MB).
+const shc = { api: null, tex: null, mat: null, matStatic: glassImg.material };
+window.__view3d.shc = shc;
+const loadScript = src => new Promise((ok, ko) => { const e = document.createElement('script'); e.src = src; e.onload = ok;
+  e.onerror = () => ko(new Error(src + ' not found')); document.head.appendChild(e); });
+const statusSHC = document.getElementById('statusSHC');
+async function startSHC() {
+  if (shc.api) return shc.api;
+  statusSHC.hidden = false; statusSHC.textContent = 'SHC interface: loading the firmware…';
+  if (typeof OnStepXSim === 'undefined') await loadScript('onstepx_sim.js');
+  if (!window.OSX_WASM || !window.OSX_WASM['35']) await loadScript('osx_wasm_35.js');
+  if (!window.InterfaceSHC) await loadScript('interface_shc_3d.js');
+  const api = await window.InterfaceSHC();
+  shc.tex = new THREE.CanvasTexture(api.canvas); shc.tex.colorSpace = THREE.SRGBColorSpace; shc.tex.anisotropy = 8;
+  shc.mat = new THREE.MeshBasicMaterial({ map: shc.tex, toneMapped: false, clippingPlanes: [] });
+  api.afterTick = () => { shc.tex.needsUpdate = true; statusSHC.textContent = 'SHC interface: ' + api.state(); };
+  return shc.api = api;
+}
+toggle('vSHC', async on => {
+  const b = document.getElementById('vSHC');
+  if (!on) { if (shc.api) shc.api.active = false; glassImg.material = shc.matStatic; statusSHC.hidden = true; return; }
+  try {
+    const api = await startSHC();
+    if (b.getAttribute('aria-pressed') !== 'true') return;   // unticked while loading
+    api.active = true; shc.mat.clippingPlanes = shc.matStatic.clippingPlanes; glassImg.material = shc.mat; statusSHC.hidden = false;
+    // facing the display, still, enclosure closed
+    ctl.autoRotate = false; document.getElementById('vRot').setAttribute('aria-pressed', 'false');
+    groupCover.position.z = 0; groupFront.position.z = 0; document.getElementById('vExplode').setAttribute('aria-pressed', 'false');
+    document.getElementById('vBack').setAttribute('aria-pressed', 'false');
+    const ys = glassImg.position.y * .15 - .6; ctl.target.set(0, ys, 0); camera.position.set(0, ys, 40); ctl.update();
+  } catch (e) {
+    console.error(e); b.setAttribute('aria-pressed', 'false'); statusSHC.hidden = false;
+    statusSHC.textContent = 'SHC interface unavailable: ' + e.message;
+  }
+});
+{ const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), el = renderer.domElement;
+  const pick = ev => {
+    const r = el.getBoundingClientRect();
+    ndc.set((ev.clientX - r.left) / r.width * 2 - 1, -(ev.clientY - r.top) / r.height * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    return ray.intersectObjects([groupFront, groupCover, inside], true)
+      .find(i => { for (let o = i.object; o; o = o.parent) if (!o.visible) return false;
+                   return !(section.on && plane.distanceToPoint(i.point) < 0); }) || null;
+  };
+  const within = (o, parent) => { for (; o; o = o.parent) if (o === parent) return true; return false; };
+  const toPx = uv => [uv.x * shc.api.canvas.width, (1 - uv.y) * shc.api.canvas.height];
+  const active = () => shc.api && shc.api.active;
+  let gesture = null;   // { type: 'glass' } or { type: 'joy', x0, y0, moved, jx, jy }
+  const travel = (C.joy_travel || 25) * Math.PI / 180, PX = 70;   // 70 px of drag = lever against its stop
+  const setJoy = (x, y) => joyHead.rotation.set(-y * travel, x * travel, 0);
+  host.addEventListener('pointerdown', ev => {
+    if (!active() || ev.button !== 0) return;
+    const h = pick(ev); if (!h) return;
+    if (h.object === glassImg && h.uv) { gesture = { type: 'glass' }; shc.api.touch(1, ...toPx(h.uv)); }
+    else if (within(h.object, joyHead)) gesture = { type: 'joy', x0: ev.clientX, y0: ev.clientY, moved: false, jx: 0, jy: 0 };
+    else if (h.object === powerButton) { shc.api.power(); powerButton.position.z -= .08; setTimeout(() => { powerButton.position.z += .08; }, 150); }
+    else return;
+    ev.stopPropagation(); ev.preventDefault();
+    if (gesture) try { host.setPointerCapture(ev.pointerId); } catch (e) { /* synthetic event */ }
+  }, true);
+  host.addEventListener('pointermove', ev => {
+    if (!gesture) return;
+    ev.stopPropagation();
+    if (gesture.type === 'glass') { const h = pick(ev); if (h && h.object === glassImg && h.uv) shc.api.touch(1, ...toPx(h.uv)); return; }
+    let x = (ev.clientX - gesture.x0) / PX, y = -(ev.clientY - gesture.y0) / PX;
+    const l = Math.hypot(x, y); if (l > 1) { x /= l; y /= l; }
+    if (l * PX > 4) gesture.moved = true;
+    gesture.jx = x; gesture.jy = y; setJoy(x, y);
+  }, true);
+  const finish = ev => {
+    if (!gesture) return;
+    ev.stopPropagation();
+    if (gesture.type === 'glass') {
+      const h = pick(ev), [x, y] = h && h.object === glassImg && h.uv ? toPx(h.uv) : [0, 0];
+      shc.api.touch(0, x, y);
+    } else {
+      shc.api.joystick(0, 0, 0); setJoy(0, 0);
+      if (!gesture.moved) { shc.api.joystick(0, 0, 1); setTimeout(() => shc.api.joystick(0, 0, 0), 150); }   // short click: SW button
+    }
+    gesture = null;
+  };
+  host.addEventListener('pointerup', finish, true);
+  host.addEventListener('pointercancel', finish, true);
+  setInterval(() => { if (gesture && gesture.type === 'joy') shc.api.joystick(gesture.jx, gesture.jy, 0); }, 20);   // 50 Hz, like the hardware tick
+  host.addEventListener('wheel', ev => {   // wheel on the glass: a vertical drag; elsewhere: zoom
+    if (!active()) return;
+    const h = pick(ev); if (!h || h.object !== glassImg || !h.uv) return;
+    ev.stopPropagation(); ev.preventDefault();
+    const [x, y] = toPx(h.uv), d = Math.sign(ev.deltaY) * -53;   // 40 UI units x 4/3
+    shc.api.touch(1, x, y); shc.api.touch(1, x, y + d / 2); shc.api.touch(1, x, y + d); shc.api.touch(0, x, y + d);
+  }, { capture: true, passive: false });
+}
+
+function resize() { const w = host.clientWidth, h = host.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(host); resize();
+renderer.setAnimationLoop(() => { ctl.update(); renderer.render(scene, camera); });
+
+// SHC_REMOTE.html: the firmware starts by itself on the glass (button "SHC interface" to switch back to a capture)
+if (document.body.dataset.autostart === '1') setTimeout(() => { const b = document.getElementById('vSHC'); if (b.getAttribute('aria-pressed') !== 'true') b.click(); }, 300);
+
+</script>
+<script>
+// Test bench: drives the firmware on the glass (interface_shc_3d.js API, created by the 3D module) and the
+// simulated OnStepX (onstepx_sim.js). Nothing here draws the interface.
+(() => {
+  const $ = id => document.getElementById(id);
+  const hw = { usb: false, battV: 3.95, gps: true, fix: true, dht: false, wifi: true };
+  let api = null, seen = 0, lastMsg = '';
+  const READS = /^(GU|GRH|GDH|GZH|GAH|GX4[23]|FA|Fg|FT|Ft|rA|GX98|rG|rT|rD|GXY.|GXX.|GX9.|GX8.|GX89|A\?|Gh|Go|GXE[9A]|GX96|GX9[237]|%B[RD]|W\?|G[MNOP]|GtH|GgH|Gv|\$QZ\?|GE)$/;
+  const apply = () => { if (!api) return; api.setBattery(hw.battV, hw.usb); api.setGps(hw.gps, hw.fix); api.setDht(hw.dht); api.setWifi(hw.wifi); };
+  const tog = (id, f) => $(id).addEventListener('click', () => {
+    const v = $(id).getAttribute('aria-pressed') !== 'true'; $(id).setAttribute('aria-pressed', v); f(v); apply();
+  });
+  const osx = () => api && api.osx;
+  tog('sMute', v => { if (osx()) osx().mute = v; });
+  tog('sWifi', v => { hw.wifi = !v; });
+  tog('sTime', v => { if (osx()) osx().timeReady = !v; });
+  tog('sEq', v => { if (osx()) osx().mount = v ? 'E' : 'A'; });
+  tog('sErr', v => { if (osx()) osx().error = v ? 1 : 0; });
+  tog('sFoc', v => { if (osx()) osx().focuser = !v; });
+  tog('sRot', v => { if (osx()) osx().rotator = !v; });
+  $('sPark').addEventListener('click', () => { if (osx()) { osx().park = 'P'; osx().tracking = false; } });
+  tog('hUsb', v => { hw.usb = v; });
+  tog('hLow', v => { hw.battV = v ? 3.40 : 3.95; });
+  tog('hEmpty', v => { hw.battV = v ? 3.25 : 3.95; });
+  tog('hGps', v => { hw.gps = !v; });
+  tog('hFix', v => { hw.fix = !v; });
+  tog('hDht', v => { hw.dht = v; });
+  tog('hSound', v => { if (api) api.sound = v; });
+  $('reads').addEventListener('click', () => $('reads').setAttribute('aria-pressed', $('reads').getAttribute('aria-pressed') !== 'true'));
+  $('nominal').addEventListener('click', () => {
+    if (osx()) osx().nominal();
+    Object.assign(hw, { usb: false, battV: 3.95, gps: true, fix: true, dht: false, wifi: true });
+    document.querySelectorAll('#bench button[aria-pressed]').forEach(b => { if (b.id !== 'hSound') b.setAttribute('aria-pressed', 'false'); });
+    apply();
+  });
+  const ORDER = ['drive', 'sky', 'mount', 'onstep', 'start', 'align', 'tracking', 'park', 'position', 'link', 'info',
+                 'acc', 'derot', 'settings', 'wifi', 'limits', 'site', 'time'];
+  function openScreen(name) {
+    if (!api) return;
+    const b = $('vSHC'); if (b.getAttribute('aria-pressed') !== 'true') b.click();
+    if (api.isOff()) api.power();
+    api.open(name);
+  }
+  document.querySelectorAll('[data-screen]').forEach(b => b.addEventListener('click', () => {
+    openScreen(b.dataset.screen); $('remote').scrollIntoView({ behavior: 'smooth' });
+  }));
+  function attach(a) {
+    api = a; api.sound = false; apply();
+    const have = api.screens(), d = $('screens');
+    for (const n of ORDER.filter(x => have.includes(x))) {
+      const b = document.createElement('button'); b.textContent = n; b.addEventListener('click', () => openScreen(n)); d.appendChild(b);
+    }
+    setInterval(tick, 200);
+  }
+  function tick() {
+    const o = api.osx, ul = $('lxLog'), all = $('reads').getAttribute('aria-pressed') === 'true';
+    for (; seen < o.log.length; seen++) {
+      const e = o.log[seen]; if (!all && READS.test(e.c)) continue;
+      const li = document.createElement('li'), r = e.r === null ? '(silent)' : e.r === '' ? '—' : e.r;
+      li.innerHTML = `<code>:${e.c.replace(/</g, '&lt;')}#</code> → ${String(r).replace(/</g, '&lt;')}`;
+      ul.prepend(li); while (ul.children.length > 60) ul.lastChild.remove();
+    }
+    if (seen > o.log.length) seen = o.log.length;
+    const m = api.message();
+    if (m && m !== lastMsg) { const li = document.createElement('li'); li.textContent = m; $('msgLog').prepend(li); while ($('msgLog').children.length > 12) $('msgLog').lastChild.remove(); }
+    lastMsg = m;
+    $('benchState').textContent = api.state() + ` · battery ${hw.battV.toFixed(2)} V${hw.usb ? ' (USB)' : ''} · GPS ${hw.gps ? (hw.fix ? 'fix' : 'searching') : 'absent'}`;
+  }
+  const wait = setInterval(() => {
+    const s = window.__view3d && window.__view3d.shc;
+    if (s && s.api) { clearInterval(wait); attach(s.api); }
+  }, 250);
+  // wiring: hover a connector (drawing or table) to isolate its wires
+  const box = $('wiringBox');
+  const hot = c => { box.classList.toggle('hovering', !!c);
+    box.querySelectorAll('[data-c]').forEach(e => e.classList.toggle('hot', e.dataset.c === c)); };
+  box.querySelectorAll('[data-c]').forEach(e => { e.addEventListener('mouseenter', () => hot(e.dataset.c)); e.addEventListener('mouseleave', () => hot(null)); });
+  // build checklist, kept in this browser
+  const KEY = 'shc-remote-steps';
+  let saved = [];
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { saved = []; }
+  document.querySelectorAll('#steps input').forEach((c, i) => {
+    c.checked = !!saved[i]; c.closest('li').classList.toggle('done', c.checked);
+    c.addEventListener('change', () => {
+      c.closest('li').classList.toggle('done', c.checked);
+      const v = [...document.querySelectorAll('#steps input')].map(x => x.checked);
+      try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* private window */ }
+    });
+  });
+})();
+</script>
+</body>
+</html>

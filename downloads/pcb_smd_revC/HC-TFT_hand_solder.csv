@@ -1,0 +1,9 @@
+Designator,Value,Footprint,Side,X (mm),Y (mm),Rotation,Why,LCSC
+BZ1,CMT-8504-100-SMT,MagneticBuzzer_CUI_CMT-8504-100-SMT,Bottom,105.5000,-110.5000,180,SMD taken out of assembly (see BOM),C22359707
+J2,Battery 18650,JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal,Bottom,157.0000,-88.0000,180,through-hole,
+J3,Power button (Dupont),PinHeader_1x04_P2.54mm_Horizontal,Bottom,154.6500,-106.0000,270,through-hole,
+J4,Display 3.5 MSP3520,PinSocket_1x14_P2.54mm_Vertical,Top,119.4900,-136.0000,90,through-hole,C2897377
+J7,DHT22 (Dupont),PinHeader_1x03_P2.54mm_Horizontal,Bottom,145.4600,-106.0000,270,through-hole,
+J8,Lamp (Dupont),PinHeader_1x02_P2.54mm_Horizontal,Bottom,144.7300,-86.0000,270,through-hole,
+J9,Joystick (JST-XH 5),JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical,Bottom,139.0000,-130.2000,180,through-hole,C157991
+U1,ESP32-S DevKit 38,ESP32_DevKit_38_3rows,Bottom,136.7000,-54.2700,180,through-hole,C2897382 + C2897380
