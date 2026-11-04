@@ -183,10 +183,10 @@
         <path d="M350 178 C500 178 520 182 640 182" fill="none" stroke="#D8342C" stroke-width="3.2"/><path d="M350 198 C500 198 520 202 640 202" fill="none" stroke="#8B5A2B" stroke-width="3.2"/>
         <circle cx="660" cy="192" r="12" fill="#FF3B28"/><text x="684" y="188">Red lamp, 1 W 640–660 nm</text><text x="684" y="204" class="sub">170 mA constant, PWM on GPIO12</text></g>
       <g class="w" data-c="J3"><rect x="330" y="240" width="20" height="80" rx="2" fill="#0B0F16"/>
-        <text x="322" y="254" text-anchor="end" style="fill:var(--silk)">J3 PWR</text><text x="322" y="274" text-anchor="end" style="fill:var(--silk)">GND</text><text x="322" y="294" text-anchor="end" style="fill:var(--silk);opacity:.6">LED+</text><text x="322" y="314" text-anchor="end" style="fill:var(--silk);opacity:.6">GND</text>
+        <text x="322" y="254" text-anchor="end" style="fill:var(--silk)">J3 PWR</text><text x="322" y="274" text-anchor="end" style="fill:var(--silk)">GND</text><text x="322" y="294" text-anchor="end" style="fill:var(--silk)">LED+</text><text x="322" y="314" text-anchor="end" style="fill:var(--silk)">GND</text>
         <path d="M350 250 C500 250 520 254 640 254" fill="none" stroke="#D39A12" stroke-width="3.2"/><path d="M350 270 C500 270 520 274 640 274" fill="none" stroke="currentColor" stroke-width="3.2"/>
-        <path d="M350 290 C500 290 520 294 640 294" fill="none" stroke="#D8342C" stroke-width="2" stroke-dasharray="6 5"/><path d="M350 310 C500 310 520 314 640 314" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 5"/>
-        <circle cx="662" cy="284" r="16" fill="none" stroke="currentColor"/><text x="662" y="289" text-anchor="middle">⏻</text><text x="690" y="270">Power button 16 mm, momentary NO</text><text x="690" y="288" class="sub">J3-1 / J3-2 · ring (dashed) only for a lit button</text><text x="690" y="304" class="sub">no emergency-stop button, input or jumper</text></g>
+        <path d="M350 290 C500 290 520 294 640 294" fill="none" stroke="#D8342C" stroke-width="3.2"/><path d="M350 310 C500 310 520 314 640 314" fill="none" stroke="currentColor" stroke-width="3.2"/>
+        <circle cx="662" cy="284" r="16" fill="none" stroke="currentColor"/><text x="662" y="289" text-anchor="middle">⏻</text><text x="690" y="270">Power button 16 mm, momentary NO</text><text x="690" y="288" class="sub">NO→1, C→2, ring LED+→3, LED−→4 (red, DC 3-6 V)</text><text x="690" y="304" class="sub">no emergency-stop button, input or jumper</text></g>
       <g class="w" data-c="J7"><rect x="330" y="350" width="20" height="60" rx="2" fill="#0B0F16"/>
         <text x="322" y="364" text-anchor="end" style="fill:var(--silk)">J7 3V3</text><text x="322" y="384" text-anchor="end" style="fill:var(--silk)">TX</text><text x="322" y="404" text-anchor="end" style="fill:var(--silk)">GND</text>
         <path d="M350 360 C500 360 520 364 640 364" fill="none" stroke="#D8342C" stroke-width="3.2"/><path d="M350 380 C500 380 520 384 640 384" fill="none" stroke="#2E9E5B" stroke-width="3.2"/><path d="M350 400 C500 400 520 404 640 404" fill="none" stroke="currentColor" stroke-width="3.2"/>
@@ -198,7 +198,7 @@
       <g class="w" data-c="J4"><rect x="60" y="500" width="160" height="18" rx="3" fill="#0B0F16" stroke="var(--silk)" stroke-dasharray="4 3"/><text x="60" y="486" style="fill:var(--silk)">J4: display, other side</text></g>
     </svg>
     </div>
-    <figcaption><b>Five connectors, fourteen wires, nothing else.</b> No jumper anywhere. Dupont on the right-angle headers J3, J7, J8; keyed JST-PH for the battery (never a Dupont there: a reversal destroys the charger); JST-XH for the joystick. Plug J7 before J8. Annotated photo-realistic renders of the board: <a href="#pictures">Pictures</a>.</figcaption>
+    <figcaption><b>Five connectors, sixteen wires, nothing else.</b> No jumper anywhere. Dupont on the right-angle headers J3, J7, J8; keyed JST-PH for the battery (never a Dupont there: a reversal destroys the charger); JST-XH for the joystick. Plug J7 before J8. Annotated photo-realistic renders of the board: <a href="#pictures">Pictures</a>.</figcaption>
   </figure>
   <div class="table-wrap" style="margin-top:12px">
     <table>
@@ -207,7 +207,7 @@
         <tr data-c="J1"><td class="g">J1</td><td class="g">USB-C, 5 V</td><td>Charger (top of the enclosure)</td><td class="g">VBUS → GPIO39 (÷2)</td><td class="n">Charges at 1 A (TP4056); flashing goes through the DevKit's own USB</td></tr>
         <tr data-c="J2"><td class="g">J2</td><td class="g">1 BAT+ · 2 BAT−</td><td>18650 holder</td><td class="g">VBAT → GPIO36 (÷2)</td><td class="n">3.7 V (1S) only; check polarity with a multimeter; BAT− is not ground</td></tr>
         <tr data-c="J8"><td class="g">J8</td><td class="g">1 LED+ · 2 LED−</td><td>1 W red LED</td><td class="g">GPIO12 (Q8)</td><td class="n">170 mA constant current: no resistor</td></tr>
-        <tr data-c="J3"><td class="g">J3</td><td class="g">1 PWR · 2 GND · 3 LED+ · 4 GND</td><td>⏻ (NO contact)</td><td class="g">GPIO34 sense, 25 hold, 26 ring</td><td class="n">Rev. B board: J3-5 / J3-6 stay empty, no jumper</td></tr>
+        <tr data-c="J3"><td class="g">J3</td><td class="g">1 PWR · 2 GND · 3 LED+ · 4 GND</td><td>⏻ ABILKEEN 16 mm: NO, C, ring +, ring −</td><td class="g">GPIO34 sense, 25 hold, 26 ring</td><td class="n">Rev. B board: J3-5 / J3-6 stay empty, no jumper</td></tr>
         <tr data-c="J7"><td class="g">J7</td><td class="g">1 3V3 · 2 TX · 3 GND</td><td>NEO-M8N GPS</td><td class="g">GPIO17 (UART2 RX)</td><td class="n">Never 5 V; its regulator must give ≥ 2.7 V from 3.3 V</td></tr>
         <tr data-c="J9"><td class="g">J9</td><td class="g">GND · 3V3 · VRX · VRY · SW</td><td>KY-023</td><td class="g">33, 35 (ADC1), 13</td><td class="n">3.3 V, never 5 V</td></tr>
         <tr data-c="J4"><td class="g">J4</td><td class="g">VCC … T_IRQ (14)</td><td>MSP3520, plugged in</td><td class="g">SPI 18/23/19, CS 5, DC 21, RST 4, T_CS 22, IRQ 14, BL 16</td><td class="n"><b>Bridge J1 of the module</b>; pin 9 SDO not connected (rev. B: bend it out)</td></tr>
@@ -274,21 +274,21 @@
       <thead><tr><th>Part</th><th>Qty</th><th>Where</th><th>Price</th><th>Requirement</th></tr></thead>
       <tbody>
         <tr class="group"><td colspan="5">Modules</td></tr>
-        <tr><td>3.5″ SPI display <b>lcdwiki MSP3520</b> (ILI9488 + XPT2046, resistive)</td><td class="g">1</td><td>Elecrow / AliExpress</td><td class="g">≈ $9.50</td><td class="n">ILI9488 only (no ST7796, no MSP3521, no capacitive); <b>bridge J1</b></td></tr>
+        <tr><td>3.5″ SPI display <b>lcdwiki MSP3520</b> (ILI9488 + XPT2046, resistive) — <a href="https://www.lcdwiki.com/3.5inch_SPI_Module_ILI9488_SKU:MSP3520">lcdwiki reference</a></td><td class="g">1</td><td><a href="https://www.elecrow.com/3-5-inch-480-320-spi-tft-lcd-module-with-ili9488-driver.html">Elecrow</a> (touch option) / AliExpress</td><td class="g">≈ $9.50</td><td class="n">ILI9488 only (no ST7796, no MSP3521, no capacitive); <b>bridge J1</b></td></tr>
         <tr><td>ESP32 DevKit 38 pins, WROOM-32</td><td class="g">1</td><td>BerryBase (NodeMCU-32S)</td><td class="g">6.80 €</td><td class="n">no WROVER / S3 / C3 / 30 pins; measure the row spacing</td></tr>
-        <tr><td>u-blox NEO-M8N "GPS module with compass", 32 × 32 mm</td><td class="g">1</td><td>AliExpress</td><td class="g">—</td><td class="n">NMEA output; 3.3 V-capable regulator (not AMS1117)</td></tr>
-        <tr><td>Joystick KY-023 / HW-504</td><td class="g">1</td><td>funduinoshop</td><td class="g">1.29 €</td><td class="n">measure board and holes</td></tr>
-        <tr><td>Push button 16 mm momentary NO, short (≤ 22 mm under the panel)</td><td class="g">1</td><td>AliExpress 1005006775237546</td><td class="g">≈ 0.70 €</td><td class="n">no LED ring needed</td></tr>
+        <tr><td>u-blox NEO-M8N "GPS module with compass", out of its round case</td><td class="g">1</td><td>AliExpress</td><td class="g">—</td><td class="n">board <b>32 × 32 mm</b>, no holes needed, 25 × 25 patch 3–5 mm thick, <b>≤ 9 mm overall</b>; NMEA output; 3.3 V-capable regulator (not AMS1117)</td></tr>
+        <tr><td>Joystick KY-023 / HW-504, 34 × 26 × 32 mm, 3.3–5 V</td><td class="g">1</td><td>funduinoshop / AliExpress</td><td class="g">1.29 €</td><td class="n">drawn for board 26.7 × 33.7, holes Ø 2.5 at 20 × 26.13: print the template first</td></tr>
+        <tr><td>Push button <b>ABILKEEN 16 mm ultra-slim</b>, momentary 1NO, red LED ring</td><td class="g">1</td><td><a href="https://fr.aliexpress.com/item/1005013279797542.html">AliExpress 1005013279797542</a></td><td class="g">≈ 2.80 €</td><td class="n">options: momentary, ring red, <b>DC 3-6V</b> (not 12-24 V); nut 21.7 across corners fits the Ø 23 seat</td></tr>
         <tr class="group"><td colspan="5">Power and lamp</td></tr>
         <tr><td>18650 cell, 3,000–3,500 mAh (bare is fine: the board protects it)</td><td class="g">1</td><td>batterie-boutique.fr / Nkon</td><td class="g">10–20 €</td><td class="n">3.7 V 1S only; never a fake "9,900 mAh"</td></tr>
         <tr><td>1 × 18650 holder with wires, <b>74.5 mm</b> (SparkFun PRT-12899)</td><td class="g">1</td><td>Opencircuit</td><td class="g">4.75 €</td><td class="n">a 76 mm holder probably does not fit</td></tr>
-        <tr><td>1 W red LED 640–660 nm on 20 mm star + 20 mm 30° optic with holder</td><td class="g">1</td><td>Avonec + eBay/Amazon</td><td class="g">1.64 € + a few €</td><td class="n">—</td></tr>
+        <tr><td>1 W <b>deep red</b> LED on 20 mm star, wires pre-soldered + 20 mm 30° optic with holder</td><td class="g">1</td><td><a href="https://fr.aliexpress.com/item/1005006076131693.html">AliExpress 1005006076131693</a> (lot of 5) + eBay/Amazon</td><td class="g">≈ 2.20 € + a few €</td><td class="n">options 1W, deep red (rouge profond); not 3 W, not white/blue/UV</td></tr>
         <tr class="group"><td colspan="5">To solder on the board</td></tr>
         <tr><td>Female headers 8.5 mm (1 × 19, 1 × 17, 1 × 14), right-angle male header 1 × 40, JST S2B-PH-K, JST B5B-XH-A</td><td class="g">—</td><td>Reichelt</td><td class="g">≈ 2.40 €</td><td class="n">J4 at 8.5 mm: 11.04 mm display-to-board</td></tr>
         <tr><td>Buzzer CUI / Same Sky CMT-8504-100-SMT-TR</td><td class="g">1</td><td>DigiKey / LCSC</td><td class="g">1.58 €</td><td class="n">rated 4 kHz (firmware default)</td></tr>
         <tr class="group"><td colspan="5">Fasteners, wiring, printing</td></tr>
         <tr><td>Heat-set inserts M2.5 × 3.5; M2.5 × 25 / × 16 countersunk; M2.5 × 6; 4 × M3 × 6 self-tapping (display); M2 × 8 and ST2.6 × 4 self-tapping; 2 cable ties</td><td class="g">—</td><td>dhm, Marleva, AliExpress, Gotronic</td><td class="g">≈ 10 €</td><td class="n">no standoffs for the 3.5″</td></tr>
-        <tr><td>26 AWG silicone wire, JST-PH and JST-XH housings + contacts, Dupont housings 1 × 2 / 1 × 3 / 1 × 5 + contacts</td><td class="g">—</td><td>Gotronic, AliExpress</td><td class="g">≈ 20 €</td><td class="n">no jumper to buy</td></tr>
+        <tr><td>26 AWG silicone wire, JST-PH and JST-XH housings + contacts, Dupont housings 1 × 2 / 1 × 3 / 1 × 4 / 1 × 5 + contacts</td><td class="g">—</td><td>Gotronic, AliExpress</td><td class="g">≈ 20 €</td><td class="n">no jumper to buy</td></tr>
         <tr><td>Black PETG 1 kg, TPU 95A, hot glue, cyanoacrylate, POM-tip stylus</td><td class="g">—</td><td>3DJake, Gotronic, AliExpress</td><td class="g">≈ 35 €</td><td class="n">—</td></tr>
       </tbody>
     </table>
@@ -300,13 +300,13 @@
     <li><label><input type="checkbox"><span class="t"><b>Display:</b> check "ILI9488" on the module, then <b>short jumper J1</b> (0 Ω pads next to the XC6206 regulator). Never feed it 5 V afterwards.</span></label></li>
     <li><label><input type="checkbox"><span class="t"><b>Rev. B board only:</b> bend pin 9 (SDO) of the display out of J4; leave J3-5 / J3-6 empty.</span></label></li>
     <li><label><input type="checkbox"><span class="t"><b>DevKit:</b> measure its row spacing, solder the 1 × 17 header in the 3V3 row "int. NodeMCU" (22.86 mm) or "ext. DevKitC" (25.4 mm), the 1 × 19 in the GND row; USB at the top.</span></label></li>
-    <li><label><input type="checkbox"><span class="t"><b>Connectors:</b> J2, J3 (1 × 4), J7, J8 right-angle, J9 straight, BZ1 (+ on the marked pad), then J4 on the <b>front</b> side.</span></label></li>
+    <li><label><input type="checkbox"><span class="t"><b>Connectors:</b> J2, J3 (1 × 4: button NO, C, ring +, ring −), J7, J8 right-angle, J9 straight, BZ1 (+ on the marked pad), then J4 on the <b>front</b> side.</span></label></li>
     <li><label><input type="checkbox"><span class="t"><b>Before the battery:</b> USB-C only → D5 lights while charging; ⏻ pressed → 3.3 V on the DevKit 3V3 pin.</span></label></li>
     <li><label><input type="checkbox"><span class="t"><b>GPS:</b> fed from 3.3 V on the bench, its regulator output ≥ 2.7 V; wires VCC → J7-1, TXD → J7-2, GND → J7-3.</span></label></li>
     <li><label><input type="checkbox"><span class="t"><b>Flash:</b> <code>Config.h</code> (site, Wi-Fi mode, eyepieces), then <code>pio run -t upload</code> through the DevKit USB (or the Arduino IDE, "Huge APP" partition).</span></label></li>
     <li><label><input type="checkbox"><span class="t"><b>OnStepX side:</b> <code>SERIAL_IP_MODE WIFI_ACCESS_POINT</code> (or BOTH), network OnStep / password / 192.168.0.1:9999.</span></label></li>
     <li><label><input type="checkbox"><span class="t"><b>Print and fit:</b> inserts, display screwed on the 4 pillars (M3 × 6 self-tapping), board onto J4, battery holder, GPS (antenna to the front panel, 2 dots of hot glue), joystick, ⏻, lamp.</span></label></li>
-    <li><label><input type="checkbox"><span class="t"><b>First start:</b> touch calibration, Link screen shows OnStepX, arrows move the right way (<code>JOYSTICK_INVERT_*</code> if not), STOP held 1 s stops everything.</span></label></li>
+    <li><label><input type="checkbox"><span class="t"><b>First start:</b> touch calibration, image the right way up (<code>DISPLAY_FLIPPED 1</code> if not), Link screen shows OnStepX, arrows move the right way (<code>JOYSTICK_INVERT_*</code> if not), STOP held 1 s stops everything.</span></label></li>
   </ol>
 
   <h2 id="checks">What was checked (04/11/2026)</h2>
@@ -333,8 +333,8 @@
         <tr><td>DevKit row labels</td><td><span class="st ok">fixed in rev. C</span></td><td class="n">DevKitC V4 = 25.4 mm, NodeMCU-32S / clones = 22.86 mm</td></tr>
         <tr><td>Battery holder 76 mm (BerryBase)</td><td><span class="st opt">replaced</span></td><td class="n">enclosure drawn for 74.5 mm (SparkFun PRT-12899)</td></tr>
         <tr><td>Enclosure collision test (display, board, battery, joystick at its stops)</td><td id="collision"><span class="st ok">no contact (SMD and THT)</span></td><td class="n">OpenSCAD, <code>part="check"</code>, <code>test="full"</code>, SMD and THT boards</td></tr>
-        <tr class="group"><td colspan="3">Not yet checked on real hardware</td></tr>
-        <tr><td colspan="3" class="n">A real OnStepX (only its source and a simulator), the display orientation and colours on a real MSP3520 (<code>DISPLAY_FLIPPED</code> if upside down), the axis directions of an ASCOM MoveAxis, the GPS module you receive.</td></tr>
+        <tr class="group"><td colspan="3">On real hardware</td></tr>
+        <tr><td>The hand controller itself: HC-TFT board, ESP32, TFT touch display (2.8″ unit), joystick, 18650 power</td><td><span class="st ok">tested</span></td><td class="n">the author's unit, built and used at the telescope</td></tr>
       </tbody>
     </table>
   </div>
