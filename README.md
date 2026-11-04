@@ -3,6 +3,8 @@
 **Live page:** https://christm45.github.io/shc-onstepx-remote/ — the real enclosure in 3D with the actual firmware
 (compiled to WebAssembly) running on its screen, a test bench, the user guide, the wiring, pictures and all the files.
 
+<p><img src="img/enclosure/assembled_front_3-4.png" height="420" alt="Assembled hand controller"> <img src="img/enclosure/assembled_exploded.png" height="420" alt="Exploded view"></p>
+
 ![What plugs where](img/connections_back.png)
 
 ## What it is
@@ -31,7 +33,7 @@ Tested on the author's unit. The command set was checked line by line against th
 | [`downloads/pcb_tht_revB/`](downloads/pcb_tht_revB/) | **HC-TFT-T rev. B** (through-hole, solder it yourself): Gerber zip; optional JLCPCB BOM/CPL |
 | [`downloads/stl/`](downloads/stl/) | Enclosure to print: `front`, `back_cover`, `joystick_cover`, `foot_pad` (×2), `joystick_template`; `tht/` for the through-hole board |
 | [`downloads/PARTS_LIST.md`](downloads/PARTS_LIST.md) | Every part with requirements, links, indicative prices; wiring table; printing settings |
-| [`img/`](img/) | Annotated board renders (what plugs where), PCB renders, STL renders |
+| [`img/`](img/) | Annotated board renders (what plugs where), PCB renders, STL renders; [`img/enclosure/`](img/enclosure/): the enclosure part by part and assembled |
 
 Board: 72 × 90 mm, 2 layers, 1.6 mm. Enclosure: 80 × 195 × 39 mm, black PETG or ASA.
 
@@ -58,3 +60,9 @@ Board: 72 × 90 mm, 2 layers, 1.6 mm. Enclosure: 80 × 195 × 39 mm, black PETG 
 `SERIAL_IP_MODE WIFI_ACCESS_POINT` (or `BOTH` with a home router) in OnStepX's `Config.h`. Factory values used by the
 hand controller: network `OnStep`, password `password`, address `192.168.0.1`, port `9999`. Port 9999 takes one
 client: other apps use 9996–9998.
+
+## License
+
+Same license as OnStepX: **GNU General Public License v3.0 or later** — see [LICENSE](LICENSE). The board,
+enclosure and documentation files of this repository, and the firmware build running on the page, are free: you may use, modify and share them, and
+derived works must stay under the same license.
